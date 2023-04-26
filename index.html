@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Online Terminal</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'Courier New', Courier, monospace;
+			background-color: #f7f7f7;
+		}
+
+		header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+			background-color: #007bff;
+			color: #fff;
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 28px;
+			font-weight: normal;
+		}
+
+		#container {
+			display: flex;
+			flex-wrap: wrap;
+			padding: 20px;
+		}
+
+		#editor {
+			flex: 1;
+			height: 500px;
+			background-color: #fff;
+			border-radius: 5px;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+			padding: 20px;
+			margin-right: 20px;
+			overflow: auto;
+		}
+
+		#preview {
+			flex: 1;
+			height: 500px;
+			background-color: #fff;
+			border-radius: 5px;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+			padding: 20px;
+			overflow: auto;
+		}
+
+		textarea {
+			width: 100%;
+			height: 100%;
+			padding: 10px;
+			border: none;
+			font-size: 16px;
+			resize: none;
+		}
+
+		button {
+			padding: 10px 20px;
+			font-size: 16px;
+			background-color: #007bff;
+			color: #fff;
+			border: none;
+			cursor: pointer;
+			margin-top: 10px;
+			margin-bottom: 20px;
+		}
+
+		iframe {
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Online Terminal</h1>
+		<a href="#" target="_blank">GitHub</a>
+	</header>
+	<div id="container">
+		<div id="editor">
+			<h3>Code Editor</h3>
+			<textarea id="code-editor" placeholder="Enter your code here..."></textarea>
+			<button onclick="runCode()">Run Code</button>
+		</div>
+		<div id="preview">
+			<h3>Output</h3>
+			<iframe id="preview-iframe"></iframe>
+		</div>
+	</div>
+
+	<script>
+		function runCode() {
+			var code = document.getElementById("code-editor").value;
+			var iframe = document.getElementById("preview-iframe");
+			var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+			if (code.includes("<html") || code.includes("<head") || code.includes("<body")) {
+				iframeDoc.open();
+				iframeDoc.write(code);
+				iframeDoc.close();
+			} else if (code.includes("print")) {
+				code = code.replace(/print\(/g, "document.write(");
+				iframeDoc.open();
+				iframeDoc.write("<pre>" + code + "</pre>");
+				iframeDoc.close();
+			} else {
+				try {
+					eval(code);
+				} catch(err) {
+					iframeDoc.open();
+					iframeDoc.write("<pre style='color:red'>" + err.message + "</pre>");
+					iframeDoc.close();
+				}
+			}
+		}
+	</script>
+</body>
+</html>
